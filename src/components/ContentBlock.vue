@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div v-if="results.length > 0" class="results">
-            <ul v-if="results.length > 1" class="results__header">
-                <li class="results__header-item" v-for="result in results" v-bind:key="result.text" v-on:click="selectResult(result)">
-                    {{result.text}}
+        <div v-if="contentData.length > 0" class="results">
+            <ul class="results__header">
+                <li v-bind:class="headerClass" v-for="(content, index) in contentData" v-bind:key="content.title" v-on:click="selectBlock(index)">
+                    {{content.title}}
                 </li>
             </ul>
             <ul class="results__content">
@@ -32,18 +32,17 @@
 </template>
 
 <script>
-import Bus from '../utils/bus.js'
 import Modal from './Modal.vue'
+import Bus from '../utils/bus.js'
 
 export default {
-    name: 'Results',
+    name: 'ContentBlock',
     components: {
         Modal
     },
     data() {
         return {
-            results: [],
-            content: {},
+            activeBlockIndex: 0,
             search: '',
             sortBy: 'nameUp',
             sortOptions: [
@@ -52,45 +51,30 @@ export default {
                 {title: 'По рейтингу (по убыванию)', value: 'ratingUp'},
                 {title: 'По рейтингу (по возростанию)', value: 'ratingDown'}
             ],
-            lastSort: '',
             currentItem: {},
             showModal: false,
             pagesQuantity: 0,
             currentPage: 0,
-            isMobile: false
         }
     },
+    props: ['contentData'],
     mounted() {
-        Bus.$on('addToResults', (data) => {
-            if (this.results.length <= 2) {
-                this.results.push(data)
-            } else {
-                this.results.shift()
-                this.results.push(data)
-            }
-
-            if (this.content.text === undefined)
-                this.content = data
-        })
-
         Bus.$on('closeModal', () => {
             this.showModal = false
         })
-
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent))
-            this.isMobile = true
-            console.log(this.isMobile)
     },
     methods: {
-        selectResult(result) {
-            this.content = result
+        selectBlock(title) {
+            this.activeBlockIndex = title
         },
         showInfo(itemData) {
             this.showModal = true
             this.currentItem = itemData
         },
         getFilterList() {
-            return this.content.items.filter(item => {
+            let selectedContentData = this.contentData[this.activeBlockIndex]
+
+            return selectedContentData.items.filter(item => {
                 return item.name.toLowerCase().includes(this.search.toLowerCase())
             })
         },
@@ -144,6 +128,12 @@ export default {
             let result = this.getPaginatedList(sortedList)
 
             return result
+        },
+        headerClass() {
+            return  {
+                'results__header-item': this.contentData.length > 1,
+                'results__header-single-item': this.contentData.length <= 1
+            }
         }
     }
 }
@@ -173,10 +163,17 @@ border-top-right-radius(n)
         display flex
         justify-content space-around
 
+    &__header-single-item
+        list-style-type none
+        padding 5px 0px
+        margin-right auto
+
+
     &__header-item
         list-style-type none
         padding 5px 10px
         border 1px solid black
+        border-bottom none
         border-top-left-radius(10px)
         border-top-right-radius(10px)
         flex-grow 1

@@ -37,10 +37,10 @@ export default {
                             }
 
                             this.isLoading = false
-                            response.data.text = this.requestText
+                            response.data.title = this.requestText
 
                             Bus.$emit('addToHistory', historyRequest)
-                            Bus.$emit('addToResults', response.data)
+                            Bus.$emit('addContent', response.data)
 
                             this.requestText = ''
                         } else {
