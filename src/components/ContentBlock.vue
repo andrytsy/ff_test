@@ -71,6 +71,11 @@ export default {
             this.showModal = true
             this.currentItem = itemData
         },
+        sortByField(field) {
+            return (a, b) => {
+                return a[field] >= b[field] ? 1 : -1;
+            }
+        },
         getFilterList() {
             let selectedContentData = this.contentData[this.activeBlockIndex]
 
@@ -80,28 +85,15 @@ export default {
         },
         getSortedList(list) {
             if (this.sortBy === 'nameUp' || this.sortBy === 'nameDown') {
-                if (this.sortBy === 'nameDown') {
-                    list.sort((a, b) => {
-                        if (a.name.toLowerCase() < b.name.toLowerCase())
-                            return 1
-                        if (a.name.toLowerCase() > b.name.toLowerCase())
-                            return -1
-                        return 0
-                    })
-                } else {
-                    list.sort((a, b) => {
-                        if (a.name.toLowerCase() > b.name.toLowerCase())
-                            return 1
-                        if (a.name.toLowerCase() < b.name.toLowerCase())
-                            return -1
-                        return 0
-                    })
-                }
+                if (this.sortBy === 'nameDown')
+                    list.sort(this.sortByField('name')).reverse()
+                else
+                    list.sort(this.sortByField('name'))
             } else {
                 if (this.sortBy === 'ratingDown')
-                    list.sort((a, b) => a.score - b.score)
+                    list.sort(this.sortByField('score'))
                 else
-                    list.sort((a, b) => b.score - a.score)
+                    list.sort(this.sortByField('score')).reverse()
             }
 
             return list
