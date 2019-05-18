@@ -71,9 +71,15 @@ export default {
             this.showModal = true
             this.currentItem = itemData
         },
-        sortByField(field) {
-            return (a, b) => {
-                return a[field] >= b[field] ? 1 : -1;
+        sortByField(field, isString) {
+            if (isString) {
+                return (a, b) => {
+                    return a[field].toLowerCase() >= b[field].toLowerCase() ? 1 : -1;
+                }
+            } else {
+                return (a, b) => {
+                    return a[field] >= b[field] ? 1 : -1;
+                }
             }
         },
         getFilterList() {
@@ -86,9 +92,9 @@ export default {
         getSortedList(list) {
             if (this.sortBy === 'nameUp' || this.sortBy === 'nameDown') {
                 if (this.sortBy === 'nameDown')
-                    list.sort(this.sortByField('name')).reverse()
+                    list.sort(this.sortByField('name', true)).reverse()
                 else
-                    list.sort(this.sortByField('name'))
+                    list.sort(this.sortByField('name', true))
             } else {
                 if (this.sortBy === 'ratingDown')
                     list.sort(this.sortByField('score'))
