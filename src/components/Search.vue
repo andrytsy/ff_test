@@ -1,6 +1,6 @@
 <template>
     <span class="search">
-        <input type="text" class="search__field" placeholder="Введите что-нибудь" v-model="requestText">
+        <input type="text" class="search__field" placeholder="Введите что-нибудь" v-model="request">
         <p class="search__required-error" v-if="showError">Введите что-нибудь</p>
         <input type="button" class="search__btn" value="Отправить" @click="send" :disabled="isLoading">
     </span>
@@ -14,35 +14,35 @@ export default {
     name: 'Search',
     data() {
         return {
-            requestText: '',
+            request: '',
             showError: false,
             isLoading: false 
         }
     },
     methods: {
         send() {
-            if (this.requestText.length) {
+            if (this.request.length) {
                 this.isLoading = true
                 this.showError = false
 
                 axios
-                    .get('https://api.github.com/search/repositories?q=' + this.requestText)
+                    .get('https://api.github.com/search/repositories?q=' + this.request)
                     .then(response => {
                         if (response.status === 200 && response.data) {
                             let date = new Date()
-                            let historyRequest = {
-                                text: this.requestText,
+                            let historyItem = {
+                                text: this.request,
                                 time: (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()),
                                 count: response.data.total_count
                             }
 
                             this.isLoading = false
-                            response.data.title = this.requestText
+                            response.data.title = this.request
 
-                            Bus.$emit('addToHistory', historyRequest)
+                            Bus.$emit('addToHistory', historyItem)
                             Bus.$emit('addContent', response.data)
 
-                            this.requestText = ''
+                            this.request = ''
                         } else {
                             throw new Error("Houston we have a problem.")
                         }

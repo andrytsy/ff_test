@@ -22,8 +22,8 @@ export default {
         }
     },
     mounted() {
-        Bus.$on('addToHistory', (historyRequest) => {
-            this.historyList.push(historyRequest)
+        Bus.$on('addToHistory', (historyItem) => {
+            this.historyList.push(historyItem)
         })
     }
 }

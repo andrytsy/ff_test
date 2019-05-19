@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div v-if="contentData.length > 0" class="results">
-            <ul class="results__header">
+        <div v-if="contentData.length > 0" class="block">
+            <ul class="block__header">
                 <li v-bind:class="headerClass" v-for="(content, index) in contentData" v-bind:key="content.title" v-on:click="selectBlock(index)">
                     {{content.title}}
                 </li>
             </ul>
-            <ul class="results__content">
-                <li class="results__content-first-item">
+            <ul class="block__content">
+                <li class="block__content-first-item">
                     <input type="text" placeholder="Фильтр" v-model="search">
                     <select v-model="sortBy">
                         <option v-for="option in sortOptions" v-bind:value="option.value" v-bind:key="option.title">
@@ -15,11 +15,11 @@
                         </option>
                     </select>
                 </li>
-                <li class="results__content-item" v-for="item in computedList" v-bind:key="item.id" v-on:click="showInfo(item)">
-                    <span class="results__content-item-name">{{item.name}}</span> <span>{{item.score}}</span>
+                <li class="block__content-item" v-for="item in computedList" v-bind:key="item.id" v-on:click="showInfo(item)">
+                    <span class="block__content-item-name">{{item.name}}</span> <span>{{item.score}}</span>
                 </li>
-                <li class="results__content-last-item" v-if="currentPage > 0">
-                    <span class="results__pagination-item" v-bind:class="{ active: number === currentPage }" v-for="number in pagesQuantity" v-on:click="currentPage = number"> 
+                <li class="block__content-last-item" v-if="currentPage > 0">
+                    <span class="block__pagination-item" v-bind:class="{ active: number === currentPage }" v-for="number in pagesQuantity" v-on:click="currentPage = number" v-bind:key="number"> 
                         {{number}}
                     </span>
                 </li>
@@ -32,8 +32,8 @@
 </template>
 
 <script>
-import Modal from './Modal.vue'
 import Bus from '../utils/bus.js'
+import Modal from './Modal.vue'
 
 export default {
     name: 'ContentBlock',
@@ -64,30 +64,22 @@ export default {
         })
     },
     methods: {
-        selectBlock(title) {
-            this.activeBlockIndex = title
+        selectBlock(index) {
+            this.activeBlockIndex = index
         },
         showInfo(itemData) {
             this.showModal = true
             this.currentItem = itemData
         },
         sortByField(field, isString) {
-            if (isString) {
-                return (a, b) => {
-                    return a[field].toLowerCase() >= b[field].toLowerCase() ? 1 : -1;
-                }
-            } else {
-                return (a, b) => {
-                    return a[field] >= b[field] ? 1 : -1;
-                }
-            }
+            if (isString)
+                return (a, b) => a[field].toLowerCase() >= b[field].toLowerCase() ? 1 : -1;
+            else
+                return (a, b) => a[field] >= b[field] ? 1 : -1;
         },
         getFilterList() {
             let selectedContentData = this.contentData[this.activeBlockIndex]
-
-            return selectedContentData.items.filter(item => {
-                return item.name.toLowerCase().includes(this.search.toLowerCase())
-            })
+            return selectedContentData.items.filter(item => item.name.toLowerCase().includes(this.search.toLowerCase()))
         },
         getSortedList(list) {
             if (this.sortBy === 'nameUp' || this.sortBy === 'nameDown') {
@@ -129,8 +121,8 @@ export default {
         },
         headerClass() {
             return  {
-                'results__header-item': this.contentData.length > 1,
-                'results__header-single-item': this.contentData.length <= 1
+                'block__header-item': this.contentData.length > 1,
+                'block__header-single-item': this.contentData.length <= 1
             }
         }
     }
@@ -149,7 +141,7 @@ border-top-right-radius(n)
     -moz-border-top-right-radius n
     border-top-right-radius n
 
-.results
+.block
     width 425px
     margin-top 10px
 

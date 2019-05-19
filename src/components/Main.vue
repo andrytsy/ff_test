@@ -6,7 +6,7 @@
             <ContentBlock :contentData="contentData" />
         </div>
         <div v-if="isMobile === true">
-            <div v-for="content in contentData">
+            <div v-for="content in contentData" v-bind:key="content">
                 <ContentBlock :contentData="[content]" />
             </div>
         </div>
@@ -56,5 +56,4 @@ export default {
     display flex
     flex-direction column
     align-items center
-
 </style>
