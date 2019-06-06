@@ -1,5 +1,3 @@
-# ff_test
-
 ## Project setup
 ```
 npm install
